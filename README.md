@@ -1,60 +1,71 @@
 # Kausik
 
-VIT Chennai. I build web apps students actually open between classes — and I
-sweat the unglamorous parts: honest empty states, requests that time out instead
-of hanging, and academic data that never leaves the device it belongs on.
+I study at VIT Chennai and I build the software my own semester needs. Most of
+it sits on top of VTOP and Moodle, because that is where the data lives and it
+isn't going to turn into a usable app by itself.
 
-## Now building
+## UltraCC — VIT Student OS
 
-### [UltraCC](https://github.com/TGFUKAUSIK/UltraCC) — VIT Student OS
+Attendance, timetable, internal marks, exam slots, LMS coursework, FFCS
+planning and campus services (bus routes, library catalogue, clubs,
+previous-year papers) in one installable PWA.
 
-Attendance, timetable, marks, exams, LMS coursework, FFCS planning and campus
-services in one installable PWA on top of VTOP and Moodle.
+- React 19 and TypeScript on Vite, Supabase Postgres and Edge Functions behind
+  it, Vitest for the tests.
+- VTOP and Moodle logins are posted from edge functions, so your password never
+  goes to a browser-originated request. The session the browser does hold is
+  AES-GCM encrypted and memory-only.
+- Normalised academic data is cached in IndexedDB so the app opens on a hostel
+  floor with one bar of signal. The service worker is versioned per build,
+  because a stale shell referencing deleted chunks is the worst failure an
+  offline-first app can have.
+- The Q-Bank lists 3,100+ previous-year papers from
+  [CodeChef-VIT's archive](https://github.com/CodeChefVIT/papers-codechef).
+  Their sync job copies metadata into Postgres and nothing else — the PDFs stay
+  on CodeChef-VIT's storage and each entry links back out.
 
-- **Nothing is invented.** Where the university publishes no data, the UI says
-  so instead of filling the gap — a rule pinned by tests, not good intentions.
-- **Credentials stay server-side.** VTOP and LMS authentication run through
-  Supabase Edge Function gateways; the session is AES-GCM encrypted and lives in
-  browser memory only. No cookies, CSRF tokens or marks in logs.
-- **Survives a bad campus network.** Normalised academic data caches in
-  IndexedDB, and the service worker is versioned per build so a stale deploy
-  can't serve a broken shell.
-- **Reminders outlive the browser tab** through scheduled Web Push, dispatched
-  in-database, with delivery health reported honestly in Settings.
-- **Question bank** of 3,100+ previous-year papers, mirrored server-side from
-  [CodeChef-VIT's archive](https://github.com/CodeChefVIT/papers-codechef) (MIT).
-  Metadata only — every paper opens from the source's own link.
-- React 19 · TypeScript · Vite · Supabase Postgres and Edge Functions · Vitest.
+### What the tests argue about
 
-### [Campusly](https://github.com/TGFUKAUSIK/campusly)
+There are 59 test files under `src`, and the ones worth reading are named after
+complaints I actually received:
 
-An iPhone-first student super-app: day timetable with current-class state,
-attendance analytics, GPA trajectory, assignments, notes, a global `⌘K` command
-palette, offline app-shell caching and Supabase Auth. Written from scratch as a
-PWA that is meant to feel native.
+- `errorCopy.test.ts` checks that machine-authored error strings get replaced
+  with copy a person wrote, while real failures stay visible.
+- `upstreamIsolation.test.ts` fails the build if a data source's hostname ever
+  shows up in frontend code.
+- `railLayout.test.ts` pins the nav rail's collapsed and expanded widths, and
+  the offset of the content next to it, so the collapse toggle can't vanish.
+- `naming.test.ts` requires the desktop rail and the mobile menu to offer the
+  same destinations under the same labels.
+- `phoneIdentity.test.ts` separates "that number is invalid" from "you are
+  talking to a stale deployment" from "the server is genuinely down".
+- `cabshareOwnership.test.ts` makes sure the app never hands out a share code
+  for somebody else's ride listing.
+- `pyqAttribution.test.ts` fails if the paper archive loses its credit line or
+  a PDF sneaks into the repo.
 
-## Started here
+Where VTOP has nothing, the app says it has nothing. An ungraded internal
+assessment displays as ungraded instead of quietly averaging over an empty set.
+
+## Campusly
+
+A separate, iPhone-first student PWA: day timetable with current-class state,
+attendance analytics, GPA trajectory, assignments, notes, a `⌘K` command
+palette, offline app-shell caching and Supabase Auth. It is where I work out
+what a campus app feels like when it is designed to be opened with one thumb.
+
+## Before that
 
 [Atom's Music](https://github.com/TGFUKAUSIK/Atom-s-Music) — a Discord music bot
-on erela.js and discord.js v13, published in 2022. Around it sits a trail of
-forked Lavalink bots I took apart to work out how they did it. Reading other
-people's bots turned into writing the gateways, parsers, migrations and test
-suites myself.
+on erela.js and discord.js v13, published in 2022, along with a set of Lavalink
+bot forks I took apart to see how they handled sessions and queues. Reading
+other people's bot code is how I picked up Node, WebSockets, and the difference
+between polling a REST endpoint and holding a connection open.
 
-## How I work
+## Elsewhere
 
-- A bug report is a missing test: reproduce it, then pin the behaviour that broke.
-- Empty is a real state, and so is *unavailable*. Neither gets an endless spinner.
-- Mobile is the default rather than the fallback — this ships to phones.
-- Facts before guesses: read the actual response before changing the code.
-
-## Stack
-
-TypeScript · React · Vite · PWA and Service Workers · Supabase (Postgres, Edge
-Functions) · Express · Vitest · Node
-
-Find me in the issues of whatever you're using, or on Discord as
-`TGFU KAUSIK#0007`.
+Discord: `TGFU KAUSIK#0007`. Otherwise, the issues tab of whichever repository
+you found me from.
 
 <!---
 TGFUKAUSIK/TGFUKAUSIK is a ✨ special ✨ repository because its `README.md`
